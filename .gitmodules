@@ -1,0 +1,6 @@
+[submodule "electrostatic"]
+	path = electrostatic
+	url = https://github.com/bivex/electrostatic.git
+[submodule "mysite"]
+	path = mysite
+	url = ./mysite
