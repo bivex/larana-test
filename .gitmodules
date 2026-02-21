@@ -3,4 +3,4 @@
 	url = https://github.com/bivex/electrostatic.git
 [submodule "mysite"]
 	path = mysite
-	url = ./mysite
+	url = https://github.com/bivex/mysite.git
