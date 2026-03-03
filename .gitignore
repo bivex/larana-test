@@ -1,0 +1,34 @@
+# Electrostatic binary
+electrostatic
+
+# Generated site
+dist/
+
+# GitHub Pages git copy (local only)
+.github-pages-git/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+
+# Temporary files
+*.tmp
+*.log
