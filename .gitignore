@@ -1,5 +1,6 @@
 # Electrostatic binary
 electrostatic
+esbuild
 
 # Generated site
 dist/

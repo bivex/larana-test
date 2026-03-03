@@ -9,7 +9,7 @@ PAGES_REPO="https://github.com/${GITHUB_USER}/${GITHUB_USER}.github.io.git"
 DIST_DIR="dist"
 ELECTROSTATIC_DIR="electrostatic"
 CONTENT_DIR="mysite"
-BINARY_NAME="electrostatic"
+BINARY_NAME="esbuild"
 
 echo "========================================"
 echo "  $CONFIG"
@@ -20,9 +20,8 @@ echo ""
 
 # Шаг 1: Сборка electrostatic
 echo "Step 1: Building electrostatic..."
-cd "$ELECTROSTATIC_DIR"
-go build -o "../$BINARY_NAME" .
-cd ..
+(cd "$ELECTROSTATIC_DIR" && go mod tidy && go build -o "$BINARY_NAME" .)
+cp "$ELECTROSTATIC_DIR/$BINARY_NAME" ./
 echo "✓ Build complete"
 echo ""
 
@@ -57,7 +56,7 @@ git add -A
 COMMIT_MSG="Deploy $(date '+%Y-%m-%d %H:%M:%S')"
 git commit -m "$COMMIT_MSG" || echo "No changes to commit"
 
-git push -f origin master
+git push -f origin gh-pages
 echo "✓ Deploy complete"
 echo ""
 
