@@ -42,41 +42,33 @@ stop_old_server() {
 }
 
 # Шаг 1: Сборка electrostatic
-echo -e "${GREEN}[1/4] Building electrostatic...${NC}"
+echo -e "${GREEN}[1/3] Building electrostatic...${NC}"
 (cd "$ELECTROSTATIC_DIR" && go mod tidy && go build -o "$BINARY_NAME" .)
 cp "$ELECTROSTATIC_DIR/$BINARY_NAME" ./
 echo -e "${GREEN}✓ Build complete${NC}"
 echo ""
 
-# Режим запуска
-if [ "$1" == "--ssr" ]; then
-    # SSR режим с live reload
-    stop_old_server
-    echo -e "${GREEN}[2/4] Starting SSR server on http://localhost:$PORT${NC}"
-    echo -e "${YELLOW}Press Ctrl+C to stop${NC}"
-    echo ""
-
-    ./"$BINARY_NAME" -m serve -r "$CONTENT_DIR" -p ":$PORT"
-else
+# Режим запуска (по умолчанию SSR)
+if [ "$1" == "--static" ]; then
     # Статический режим
-    echo -e "${GREEN}[2/4] Exporting static site...${NC}"
+    echo -e "${GREEN}[2/3] Exporting static site...${NC}"
     rm -rf "$DIST_DIR"
     mkdir -p "$DIST_DIR"
     ./"$BINARY_NAME" -m export -r "$CONTENT_DIR" -d "$DIST_DIR"
     echo -e "${GREEN}✓ Export complete${NC}"
     echo ""
 
-    # Остановить старый сервер
     stop_old_server
 
-    # Запуск HTTP сервера
-    echo -e "${GREEN}[3/4] Starting HTTP server on http://localhost:$PORT${NC}"
+    echo -e "${GREEN}[3/3] Starting HTTP server on http://localhost:$PORT${NC}"
     echo -e "${YELLOW}Press Ctrl+C to stop${NC}"
+    echo ""
+    echo -e "${BLUE}Note: Use URLs with .html extension (e.g., /blog/go/getting-started.html)${NC}"
+    echo -e "${BLUE}Or run './serve.sh' for SSR mode with clean URLs${NC}"
     echo ""
 
     cd "$DIST_DIR"
 
-    # Проверяем доступность Python
     if command -v python3 &> /dev/null; then
         python3 -m http.server $PORT &
         SERVER_PID=$!
@@ -84,14 +76,21 @@ else
         python -m http.server $PORT &
         SERVER_PID=$!
     else
-        echo -e "${RED}Error: Python not found. Please install Python or use --ssr mode${NC}"
+        echo -e "${RED}Error: Python not found${NC}"
         exit 1
     fi
 
     echo -e "${GREEN}✓ Server started with PID: $SERVER_PID${NC}"
-    echo -e "${BLUE}Re-run this script to rebuild after changes${NC}"
     echo ""
 
-    # Ожидание
     wait $SERVER_PID 2>/dev/null || true
+else
+    # SSR режим с live reload (по умолчанию)
+    stop_old_server
+    echo -e "${GREEN}[2/3] Starting SSR server on http://localhost:$PORT${NC}"
+    echo -e "${YELLOW}Press Ctrl+C to stop${NC}"
+    echo -e "${BLUE}Changes to .md files will be reflected on refresh${NC}"
+    echo ""
+
+    ./"$BINARY_NAME" -m serve -r "$CONTENT_DIR" -p ":$PORT"
 fi
